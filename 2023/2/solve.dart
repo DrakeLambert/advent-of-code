@@ -3,9 +3,32 @@ import 'dart:io';
 void main() {
   final input = File('./input.txt').readAsStringSync().split('\n');
 
-  const maximums = {'red': 12, 'green': 13, 'blue': 14};
-
   final games = input.map(Game.parse);
+
+  var solution1 = solve1(games);
+  print('solution 1: ${solution1}');
+
+  var solution2 = solve2(games);
+  print('solution 2: ${solution2}');
+}
+
+int solve2(Iterable<Game> games) => games.map((game) {
+      final maximums = {'red': 0, 'green': 0, 'blue': 0};
+
+      for (var hand in game.hands) {
+        for (var drawing in hand.entries) {
+          if (drawing.value > maximums[drawing.key]!) {
+            maximums[drawing.key] = drawing.value;
+          }
+        }
+      }
+
+      final power = maximums.values.reduce((value, element) => value * element);
+      return power;
+    }).reduce((total, power) => total + power);
+
+int solve1(Iterable<Game> games) {
+  const maximums = {'red': 12, 'green': 13, 'blue': 14};
 
   final possibleGames = games.where((game) {
     for (var hand in game.hands) {
@@ -19,7 +42,7 @@ void main() {
   final sumOfPossibleGameIds =
       possibleGames.map((game) => game.id).reduce((sum, id) => sum + id);
 
-  print(sumOfPossibleGameIds);
+  return sumOfPossibleGameIds;
 }
 
 class Game {
